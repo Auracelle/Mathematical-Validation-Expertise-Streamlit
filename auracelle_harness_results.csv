@@ -1,0 +1,32 @@
+id,stratum,description,expected,actual,diff,tolerance,passed,assumption_flagged
+I-1_baseline,I,Baseline case from the reviewer's worked example.,0.539915,0.5399148845555657,-1.1544443434541307e-07,0.0001,True,False
+I-2_all_zero_inputs,I,Boundary: all indicators at 0.,0.377541,0.37754066879814546,-3.3120185455315365e-07,0.0001,True,False
+I-3_all_one_inputs,I,Boundary: all indicators at 1 (weights sum to 1.0).,0.622459,0.6224593312018546,3.312018546086648e-07,0.0001,True,False
+I-4_theta_zero_midpoint,I,theta=0 with X all at 0.5: should equal case I-3's z (both z=.5).,0.622459,0.6224593312018546,3.312018546086648e-07,0.0001,True,False
+I-5_monotonicity_high_weight_indicator,I,"Monotonicity check A: raise x1 (highest weight, .5) from .8->.9 vs baseline I-1. Score MUST increase, and by more than raising a lower-weight indicator by the same amount (see I-6).",0.552308,0.5523079095743253,-9.042567472583585e-08,0.0001,True,False
+I-6_monotonicity_low_weight_indicator,I,"Monotonicity check B: raise x3 (lowest weight, .2) from .4->.5 vs baseline I-1, same delta (+0.1) as I-5. Score must increase, but LESS than I-5 (Δ=+0.0050 here vs Δ=+0.0124 in I-5).",0.544879,0.5448788923735801,-1.0762641988737442e-07,0.0001,True,False
+I-7_exact_threshold_crossing,I,Constructed so w.X exactly equals theta -> NOF must be exactly 0.5.,0.5,0.5,0.0,1e-09,True,False
+I-17_zero_zero_calibration,I,"Both inputs and threshold at zero -> exact midpoint, independent invariant of I-7.",0.5,0.5,0.0,1e-09,True,False
+I-18_theta_equals_max_possible_score,I,"theta set equal to the maximum possible w.X (weights sum to 1, X all at 1) -> even the best-case input only reaches NOF=0.5. Use this to catch mis-calibrated thresholds in real deployments.",0.5,0.5,0.0,1e-09,True,False
+I-19_saturation_positive,I,"Deliberately extreme unnormalized weights to test sigmoid overflow safety. z=30 should saturate NOF to (numerically) 1.0, not error/NaN/overflow.",1.0,0.9999999999999065,-9.348077867343818e-14,1e-09,True,False
+I-20_saturation_negative,I,Mirror of I-19 at the opposite extreme: z=-30 should saturate NOF to ~0.0.,0.0,9.3576229688393e-14,9.3576229688393e-14,1e-09,True,False
+II-8_equal_weight_domain_mean,II,[ASSUMPTION-FLAGGED] Equal-weighted mean of 3 NOF scores into one domain.,0.554167,0.5541666666666667,-3.333333332689037e-07,0.0001,True,True
+II-9_explicit_weighted_domain_mean,II,"[ASSUMPTION-FLAGGED] Explicitly-weighted mean, mirroring Stratum I's own weighting pattern.",0.66,0.6599999999999999,-1.1102230246251565e-16,1e-09,True,True
+III-10_additive_vs_multiplicative_collapse_demo_additive,III,"The reviewer's own example: one weak domain (.3) among two strong ones (.9, .9), equal weights. Demonstrates the two aggregation forms encode DIFFERENT governance theories, not the same math.",0.7,0.7,0.0,0.0001,True,False
+III-10_additive_vs_multiplicative_collapse_demo_multiplicative,III,"The reviewer's own example: one weak domain (.3) among two strong ones (.9, .9), equal weights. Demonstrates the two aggregation forms encode DIFFERENT governance theories, not the same math.",0.624025,0.6240251469155712,1.469155711530945e-07,0.0001,True,False
+III-11_equal_domains_convergence_additive,III,"Sanity check: when all domains are equal, additive and multiplicative MUST agree exactly.",0.7,0.7,0.0,1e-09,True,False
+III-11_equal_domains_convergence_multiplicative,III,"Sanity check: when all domains are equal, additive and multiplicative MUST agree exactly.",0.7,0.6999999999999998,-1.1102230246251565e-16,1e-09,True,False
+III-12_near_zero_collapse_additive,III,"Stress case: one domain near zero (.01) among two very strong domains (.99, .99). Demonstrates the multiplicative form's dramatic collapse behavior vs. the additive form's compensation.",0.663333,0.6633333333333332,3.333333332689037e-07,0.0001,True,False
+III-12_near_zero_collapse_multiplicative,III,"Stress case: one domain near zero (.01) among two very strong domains (.99, .99). Demonstrates the multiplicative form's dramatic collapse behavior vs. the additive form's compensation.",0.214005,0.21400477469184923,-2.2530815077526078e-07,0.0001,True,False
+III-13_unequal_weights_additive,III,"Non-equal beta weights, moderate domain spread — smaller but still material divergence.",0.66,0.6599999999999999,-1.1102230246251565e-16,0.0001,True,False
+III-13_unequal_weights_multiplicative,III,"Non-equal beta weights, moderate domain spread — smaller but still material divergence.",0.638855,0.6388551010990309,1.0109903092470063e-07,0.0001,True,False
+IV-14_half_environment_dom0,IV,Reviewer's own example: a hostile environment (EOC=.5) cuts realized capacity in half.,0.4,0.4,0.0,1e-09,True,False
+IV-15_no_environment_dependency_dom0,IV,Sanity check: EOC=1.0 (no physical dependency) must leave the domain score unchanged.,0.8,0.8,0.0,1e-09,True,False
+IV-16_weak_domain_mild_environment_compounding_dom0,IV,An already-weak domain (.3) under only a mild environmental penalty (.9) is further reduced.,0.27,0.27,0.0,1e-09,True,False
+RELATIONAL:I-5 > I-1 (raising the highest-weight in,I-cross,I-5 > I-1 (raising the highest-weight indicator must increase NOF),,,,,True,False
+RELATIONAL:I-6 > I-1 (raising the lowest-weight ind,I-cross,I-6 > I-1 (raising the lowest-weight indicator must also increase NOF),,,,,True,False
+RELATIONAL:(I-5 - I-1) > (I-6 - I-1)  [equal-delta ,I-cross,(I-5 - I-1) > (I-6 - I-1)  [equal-delta raise on higher-weight indicator moves score more],,,,,True,False
+ORDERING:S1_clearly_resilient>S6_balanced_moderate,Scenario,S1_clearly_resilient > S6_balanced_moderate (additive composite),,,,,True,False
+ORDERING:S6_balanced_moderate>S2_clearly_fragile,Scenario,S6_balanced_moderate > S2_clearly_fragile (additive composite),,,,,True,False
+ORDERING:S1_clearly_resilient>S3_strong_institutions_hostile_environment,Scenario,S1_clearly_resilient > S3_strong_institutions_hostile_environment (additive composite),,,,,True,False
+ORDERING:S5_mult_collapse_gap,Scenario,One catastrophic weak domain: multiplicative composite must fall well below additive (gap > 0.10),,0.1651205296385267,,,True,False
